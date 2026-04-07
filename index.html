@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IKCHAT RESELLER - LIVE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { 
+            --tab-blue: #007bff; 
+            --card-max-width: 350px;
+            --nav-top: 119px;
+            --list-top: 21px;
+            --nav-width: 95%;
+            --nav-max-width: 324px;
+            
+            /* WhatsApp Button Adjustments */
+            --chat-right-offset: 61px; 
+            --chat-top-offset: 6px; /* Isse button upar ya niche move karega */
+        }
+
+        body { 
+            margin: 0; 
+            font-family: 'Poppins', sans-serif; 
+            color: white; 
+            background: #000; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            overflow-x: hidden; 
+            min-height: 100vh; 
+            touch-action: manipulation;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #bg-video { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            z-index: -1; 
+            object-fit: contain; 
+            background-color: #000;
+            pointer-events: none; 
+        }
+        @media (max-width: 768px) { #bg-video { object-fit: cover; } }
+
+        .content-wrapper { 
+            position: relative; 
+            z-index: 1; 
+            width: 100%; 
+            padding: 10px; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+        
+        .policy-icon { 
+            position: absolute; 
+            top: 101px; 
+            min-width: 60px;
+            padding: 4px 12px;
+            background: linear-gradient(45deg, #e90a9fce, #dfca0eaf);
+            border-radius: 8px;
+            cursor: pointer; 
+            z-index: 100; 
+            font-size: 0.7rem; 
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: white;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(255, 0, 204, 0.4);
+            transition: transform 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-container { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            width: var(--nav-width); 
+            max-width: var(--nav-max-width); 
+            padding: 4px 10px; 
+            margin-top: var(--nav-top); 
+            z-index: 10; 
+            background: rgba(255, 255, 255, 0.03); 
+            border-radius: 50px; 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); 
+            box-sizing: border-box; 
+            overflow: hidden; 
+            backdrop-filter: blur(10px); 
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        #countryTabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; flex: 1; margin-right: 5px; -webkit-overflow-scrolling: touch; }
+        #countryTabs::-webkit-scrollbar { display: none; }
+
+        .tab { 
+            padding: 8px 15px; 
+            background: transparent; 
+            color: #ffffff; 
+            border-radius: 40px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            display: flex; 
+            align-items: center; 
+            white-space: nowrap; 
+            font-size: 0.75rem; 
+            transition: 0.3s; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+            flex-shrink: 0; 
+        }
+        .tab.active { 
+            background: linear-gradient(180deg, #4908b185 0%, #fa06d1f6 100%); 
+            color: #fff; 
+            box-shadow: 0 4px 15px rgba(238, 4, 199, 0.6); 
+        }
+        .tab img { width: 18px; height: 12px; margin-right: 6px; border-radius: 2px; object-fit: cover; }
+
+        .search-container { display: flex; align-items: center; position: relative; flex-shrink: 0; }
+        #searchInput { 
+            width: 0; opacity: 0; transition: all 0.4s ease; padding: 0; 
+            border: none; outline: none; background: rgba(255,255,255,0.1); 
+            color: white; height: 32px; font-size: 0.75rem; border-radius: 20px; 
+            font-family: 'JetBrains Mono', monospace;
+        }
+        #searchInput.active { width: 100px; opacity: 1; padding: 0 10px; margin-right: 5px; }
+        .search-btn { 
+            background: rgba(255,255,255,0.1); color: #ec09e1; 
+            width: 34px; height: 34px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; transition: 0.3s; font-size: 0.8rem; 
+        }
+
+        #resellerList { 
+            display: flex; flex-direction: column; gap: 15px; 
+            width: 100%; max-width: var(--card-max-width); 
+            margin-top: var(--list-top); margin-bottom: 50px; 
+        }
+
+        .reseller-card { 
+            position: relative; width: 100%; height: 110px; 
+            background-size: 100% 100%; background-repeat: no-repeat; 
+            background-position: center; display: flex; align-items: center; 
+            padding: 0 15px; box-sizing: border-box; 
+        }
+        
+        .dp-container { position: relative; width: 58px; height: 58px; margin-left: 10px; flex-shrink: 0; }
+        .profile-dp { width: 100%; height: 100%; border-radius: 50%; border: 2px solid #ffd700; background-size: cover; background-position: center; }
+        .status-dot { position: absolute; bottom: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #000; }
+        .status-online { background: #25D366; }
+        .status-offline { background: #ff3b30; }
+
+        .info { 
+            flex-grow: 1; 
+            margin-left: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            overflow: hidden; 
+        }
+        .reseller-name { 
+            font-size: 0.95rem; font-weight: 600; color: #fff; 
+            text-shadow: 2px 2px 4px #000; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        }
+        
+        .reseller-uid { 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem; color: #d1df0c; cursor: pointer; 
+            background: rgba(0,0,0,0.6); padding: 3px 8px; 
+            border-radius: 6px; width: fit-content; margin-top: 5px; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            letter-spacing: 0.5px;
+        }
+
+        /* UPDATED: Box Shape Button with Icon + Chat Text */
+        .wa-btn { 
+            background: #25D366; 
+            color: white; 
+            text-decoration: none; 
+            padding: 7px 12px;
+            border-radius: 8px; /* Box Shape */
+            display: flex;
+            align-items: center;
+            gap: 6px; /* Space between icon and text */
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: var(--chat-right-offset); 
+            margin-top: var(--chat-top-offset); /* Adjustment from top */
+            flex-shrink: 0; 
+            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);
+        }
+        .wa-btn i { font-size: 1rem; }
+        .wa-btn:active { transform: scale(0.9); }
+        
+        #loader { color: rgb(235, 229, 196); margin-top: 20px; font-weight: 600; }
+
+        #policyOverlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.95); z-index: 2000; display: none; 
+            flex-direction: column; align-items: center; justify-content: center; 
+        }
+        .policy-container { position: relative; width: 95%; height: 90%; display: flex; align-items: center; justify-content: center; }
+        #policyOverlay img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px; }
+        .right-back { 
+            position: absolute; top: 10px; right: 10px; 
+            background: rgba(0,0,0,0.7); color: white; 
+            border: 1.2px solid gold; padding: 6px 14px; 
+            border-radius: 20px; cursor: pointer; 
+            font-size: 0.85rem; font-weight: 600; z-index: 2100; 
+        }
+    </style>
+</head>
+<body>
+    <video autoplay muted loop playsinline id="bg-video"><source src="boat.mp4" type="video/mp4"></video>
+
+    <div id="policyOverlay">
+        <div class="policy-container">
+            <div class="right-back" onclick="closePolicy()">Back <i class="fas fa-times"></i></div>
+            <img src="po.png" alt="Policy">
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="policy-icon" onclick="openPolicy()">Policy</div>
+
+        <div class="nav-container">
+            <div id="countryTabs"></div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="UID..." oninput="runSearch()">
+                <div class="search-btn" onclick="document.getElementById('searchInput').classList.toggle('active')">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+        </div>
+        <div id="loader">Loading Resellers...</div>
+        <div id="resellerList"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1FOEihMnt67wQorh8ZfKlGffoEeC5IK8",
+            authDomain: "reseller-1bcab.firebaseapp.com",
+            projectId: "reseller-1bcab",
+            storageBucket: "reseller-1bcab.firebasestorage.app",
+            messagingSenderId: "907502122627",
+            appId: "1:907502122627:web:921de15409df46df404db6",
+            measurementId: "G-XVQ6DJTK2K"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let allAgents = [];
+        let activeTab = "";
+
+        window.openPolicy = () => { document.getElementById('policyOverlay').style.display = 'flex'; };
+        window.closePolicy = () => { document.getElementById('policyOverlay').style.display = 'none'; };
+
+        window.copyUID = (uid) => {
+            navigator.clipboard.writeText(uid).then(() => { 
+                const btn = event.target;
+                const originalText = btn.innerText;
+                btn.innerText = "COPIED!";
+                setTimeout(() => btn.innerText = originalText, 1000);
+            });
+        };
+
+        const agentsRef = ref(db, 'resellers'); 
+        onValue(agentsRef, (snapshot) => {
+            const data = snapshot.val();
+            const loader = document.getElementById('loader');
+            if (data) {
+                allAgents = Object.values(data);
+                loader.style.display = 'none';
+                renderTabs();
+            } else {
+                allAgents = [];
+                document.getElementById('countryTabs').innerHTML = '';
+                document.getElementById('resellerList').innerHTML = '';
+                loader.innerText = "No data found.";
+                loader.style.display = 'block';
+            }
+        }, { onlyOnce: false });
+
+        window.runSearch = () => {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allAgents.filter(a => a.uid.toLowerCase().includes(query) || a.name.toLowerCase().includes(query));
+            displayList(filtered);
+        };
+
+        window.filterCountry = (country, el) => {
+            if(activeTab === country) return;
+            activeTab = country;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderResellers(country);
+        };
+
+        function renderTabs() {
+            if (allAgents.length === 0) return;
+            const countryData = {};
+            allAgents.forEach(a => {
+                if(!countryData[a.country]) { countryData[a.country] = a.flag || ''; }
+            });
+            const countries = Object.keys(countryData);
+            if (!countries.includes(activeTab)) activeTab = countries[0];
+            const tabsHtml = countries.map(c => `
+                <div class="tab ${c === activeTab ? 'active' : ''}" onclick="filterCountry('${c}', this)">
+                    ${countryData[c] ? `<img src="${countryData[c]}" loading="lazy" alt="flag">` : ''}${c}
+                </div>`).join('');
+            document.getElementById('countryTabs').innerHTML = tabsHtml;
+            renderResellers(activeTab);
+        }
+
+        function renderResellers(country) {
+            displayList(allAgents.filter(a => a.country === country));
+        }
+
+        function displayList(agents) {
+            const list = document.getElementById('resellerList');
+            const statusClass = navigator.onLine ? 'status-online' : 'status-offline';
+            const html = agents.map(agent => `
+                <div class="reseller-card" style="background-image: url('${agent.bgFrame}')">
+                    <div class="dp-container">
+                        <div class="profile-dp" style="background-image: url('${agent.dp}')"></div>
+                        <div class="status-dot ${statusClass}"></div>
+                    </div>
+                    <div class="info">
+                        <div class="reseller-name">${agent.name}</div>
+                        <div class="reseller-uid" onclick="copyUID('${agent.uid}')">UID: ${agent.uid}</div>
+                    </div>
+                    <a href="https://wa.me/${agent.whatsapp}" class="wa-btn">
+                        <i class="fab fa-whatsapp"></i> Chat
+                    </a>
+                </div>`).join('');
+            list.innerHTML = html;
+        }
+
+        window.addEventListener('online', () => renderResellers(activeTab), {passive: true});
+        window.addEventListener('offline', () => renderResellers(activeTab), {passive: true});
+    </script>
+</body>
+</html>
