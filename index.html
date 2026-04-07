@@ -14,10 +14,8 @@
             --list-top: 21px;
             --nav-width: 95%;
             --nav-max-width: 324px;
-            
-            /* WhatsApp Button Adjustments */
             --chat-right-offset: 61px; 
-            --chat-top-offset: 6px; /* Isse button upar ya niche move karega */
+            --chat-top-offset: 6px; 
         }
 
         body { 
@@ -72,7 +70,6 @@
             color: white;
             text-transform: uppercase;
             box-shadow: 0 4px 10px rgba(255, 0, 204, 0.4);
-            transition: transform 0.2s ease;
             border: 1px solid rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
@@ -168,39 +165,38 @@
         }
         .reseller-name { 
             font-size: 0.95rem; font-weight: 600; color: #fff; 
-            text-shadow: 2px 2px 4px #000; 
+            text-shadow: none; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
         }
         
         .reseller-uid { 
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem; color: #d1df0c; cursor: pointer; 
-            background: rgba(0,0,0,0.6); padding: 3px 8px; 
-            border-radius: 6px; width: fit-content; margin-top: 5px; 
+            background: transparent; 
+            padding: 3px 0; 
+            border-radius: 0; 
+            width: fit-content; margin-top: 5px; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             letter-spacing: 0.5px;
         }
 
-        /* UPDATED: Box Shape Button with Icon + Chat Text */
         .wa-btn { 
             background: #25D366; 
             color: white; 
             text-decoration: none; 
             padding: 7px 12px;
-            border-radius: 8px; /* Box Shape */
+            border-radius: 8px; 
             display: flex;
             align-items: center;
-            gap: 6px; /* Space between icon and text */
+            gap: 6px; 
             font-size: 0.8rem;
             font-weight: 600;
             margin-right: var(--chat-right-offset); 
-            margin-top: var(--chat-top-offset); /* Adjustment from top */
+            margin-top: var(--chat-top-offset); 
             flex-shrink: 0; 
             transition: transform 0.2s;
             box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);
         }
-        .wa-btn i { font-size: 1rem; }
-        .wa-btn:active { transform: scale(0.9); }
         
         #loader { color: rgb(235, 229, 196); margin-top: 20px; font-weight: 600; }
 
@@ -349,8 +345,8 @@
             list.innerHTML = html;
         }
 
-        window.addEventListener('online', () => renderResellers(activeTab), {passive: true});
-        window.addEventListener('offline', () => renderResellers(activeTab), {passive: true});
+        window.addEventListener('online', () => renderResellers(activeTab));
+        window.addEventListener('offline', () => renderResellers(activeTab));
     </script>
 </body>
 </html>
