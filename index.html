@@ -26,8 +26,8 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            overflow-x: hidden; 
-            min-height: 100vh; 
+            overflow: hidden; /* Prevent body scroll */
+            height: 100vh; 
             touch-action: manipulation;
             -webkit-font-smoothing: antialiased;
         }
@@ -52,7 +52,8 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            min-height: 100vh; 
+            height: 100vh; /* Fixed height */
+            overflow: hidden; /* Stop wrapper from scrolling */
         }
         
         .policy-icon { 
@@ -93,6 +94,7 @@
             overflow: hidden; 
             backdrop-filter: blur(10px); 
             -webkit-backdrop-filter: blur(10px);
+            flex-shrink: 0; /* Nav won't shrink */
         }
 
         #countryTabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; flex: 1; margin-right: 5px; -webkit-overflow-scrolling: touch; }
@@ -139,14 +141,18 @@
         #resellerList { 
             display: flex; flex-direction: column; gap: 15px; 
             width: 100%; max-width: var(--card-max-width); 
-            margin-top: var(--list-top); margin-bottom: 50px; 
+            margin-top: var(--list-top); 
+            padding-bottom: 100px; /* Space at bottom */
+            overflow-y: auto; /* Only list scrolls */
+            scrollbar-width: none; /* Firefox */
         }
+        #resellerList::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
         .reseller-card { 
-            position: relative; width: 100%; height: 110px; 
+            position: relative; width: 100%; min-height: 110px; 
             background-size: 100% 100%; background-repeat: no-repeat; 
             background-position: center; display: flex; align-items: center; 
-            padding: 0 15px; box-sizing: border-box; 
+            padding: 0 15px; box-sizing: border-box; flex-shrink: 0;
         }
         
         .dp-container { position: relative; width: 58px; height: 58px; margin-left: 10px; flex-shrink: 0; }
@@ -171,13 +177,14 @@
         
         .reseller-uid { 
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem; color: #d1df0c; cursor: pointer; 
-            background: transparent; 
-            padding: 3px 0; 
-            border-radius: 0; 
+            font-size: 0.65rem; color: #d1df0c; cursor: pointer; 
+            background: rgba(0, 0, 0, 0.5); /* Thin black transparent box */
+            padding: 2px 8px; 
+            border-radius: 4px; 
             width: fit-content; margin-top: 5px; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             letter-spacing: 0.5px;
+            border: 0.5px solid rgba(255, 255, 255, 0.1); /* Subtle thin border */
         }
 
         .wa-btn { 
@@ -265,12 +272,18 @@
         window.openPolicy = () => { document.getElementById('policyOverlay').style.display = 'flex'; };
         window.closePolicy = () => { document.getElementById('policyOverlay').style.display = 'none'; };
 
-        window.copyUID = (uid) => {
+        // Fixed UID Copy Function
+        window.copyUID = (uid, element) => {
             navigator.clipboard.writeText(uid).then(() => { 
-                const btn = event.target;
-                const originalText = btn.innerText;
-                btn.innerText = "COPIED!";
-                setTimeout(() => btn.innerText = originalText, 1000);
+                const originalText = element.innerText;
+                element.innerText = "COPIED!";
+                element.style.color = "#25D366";
+                setTimeout(() => {
+                    element.innerText = originalText;
+                    element.style.color = "#d1df0c";
+                }, 1000);
+            }).catch(err => {
+                console.error('Copy failed', err);
             });
         };
 
@@ -336,7 +349,7 @@
                     </div>
                     <div class="info">
                         <div class="reseller-name">${agent.name}</div>
-                        <div class="reseller-uid" onclick="copyUID('${agent.uid}')">UID: ${agent.uid}</div>
+                        <div class="reseller-uid" onclick="copyUID('${agent.uid}', this)">UID: ${agent.uid}</div>
                     </div>
                     <a href="https://wa.me/${agent.whatsapp}" class="wa-btn">
                         <i class="fab fa-whatsapp"></i> Chat
